@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "pl3xmap",
+  "version": "${version}",
+  "name": "Pl3xMap",
+  "description": "View in-game maps using Pl3xMap tiles",
+  "authors": [
+    "BillyGalbreath"
+  ],
+  "contact": {
+    "homepage": "https://map.pl3x.net/",
+    "issues": "https://github.com/pl3xgaming/Pl3xMap-Fabric/issues",
+    "sources": "https://github.com/pl3xgaming/Pl3xMap-Fabric",
+    "discord": "https://discord.gg/B8WpDPXeBh"
+  },
+  "license": "MIT",
+  "icon": "assets/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "net.pl3x.map.fabric.pl3xmap.Pl3xMap"
+    ]
+  },
+  "mixins": [
+    "pl3xmap.mixins.json"
+  ],
+  "accessWidener": "pl3xmap.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.11.6",
+    "fabric": "*",
+    "minecraft": "1.17.1"
+  }
+}

@@ -1,0 +1,5 @@
+accessWidener v1 named
+
+accessible class net/minecraft/client/render/MapRenderer$MapTexture
+accessible method net/minecraft/client/render/MapRenderer$MapTexture updateTexture ()V
+accessible field net/minecraft/client/render/MapRenderer mapTextures Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
