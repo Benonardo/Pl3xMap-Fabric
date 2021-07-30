@@ -5,8 +5,7 @@
   "compatibilityLevel": "JAVA_16",
   "refmap": "pl3xmap.refmap.json",
   "client": [
-    "MapTextureMixin",
-    "InGameHudMixin"
+    "MapTextureMixin"
   ],
   "injectors": {
     "defaultRequire": 1

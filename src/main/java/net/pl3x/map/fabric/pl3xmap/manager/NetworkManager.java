@@ -1,14 +1,17 @@
-package net.pl3x.map.fabric.pl3xmap.network;
+package net.pl3x.map.fabric.pl3xmap.manager;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.pl3x.map.fabric.pl3xmap.Pl3xMap;
 import net.pl3x.map.fabric.pl3xmap.data.Map;
+import net.pl3x.map.fabric.pl3xmap.duck.MapTexture;
+import net.pl3x.map.fabric.pl3xmap.network.Constants;
 
 public class NetworkManager {
     private final Identifier channel = new Identifier("pl3xmap", "pl3xmap");
@@ -24,9 +27,10 @@ public class NetworkManager {
             int action = in.readInt();
             switch (action) {
                 case Constants.GET_MAP_URL -> {
+                    System.out.println("received map url");
                     int response = in.readInt();
                     if (response == Constants.RESPONSE_SUCCESS) {
-                        Map.MAP_URL = in.readUTF();
+                        pl3xmap.setMapUrl(in.readUTF());
                     } else {
                         this.pl3xmap.enabled = false;
                     }
@@ -43,7 +47,8 @@ public class NetworkManager {
                             int z = in.readInt();
                             int zoom = in.readInt();
                             String world = in.readUTF();
-                            Map.MAPS.put(id, new Map(this.pl3xmap, scale, x, z, zoom, world));
+                            ((MapTexture) MinecraftClient.getInstance().gameRenderer.getMapRenderer().mapTextures.get(id))
+                                    .setMap(new Map(this.pl3xmap, id, scale, x, z, zoom, world));
                         }
                     }
                 }
@@ -52,6 +57,7 @@ public class NetworkManager {
     }
 
     public void requestMapUrl() {
+        System.out.println("request map url");
         ByteArrayDataOutput out = out();
         out.writeInt(Constants.GET_MAP_URL);
         send(out);
@@ -65,7 +71,9 @@ public class NetworkManager {
     }
 
     private void send(ByteArrayDataOutput out) {
-        ClientPlayNetworking.send(this.channel, new PacketByteBuf(Unpooled.wrappedBuffer(out.toByteArray())));
+        if (MinecraftClient.getInstance().getNetworkHandler() != null) {
+            ClientPlayNetworking.send(this.channel, new PacketByteBuf(Unpooled.wrappedBuffer(out.toByteArray())));
+        }
     }
 
     @SuppressWarnings("UnstableApiUsage")

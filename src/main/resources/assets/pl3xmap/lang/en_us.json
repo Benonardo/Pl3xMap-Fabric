@@ -1,5 +1,5 @@
 {
   "category.pl3xmap.keybinds": "Pl3xMap",
-  "key.pl3xmap.enabled": "Toggle On/Off",
-  "key.pl3xmap.togglehud": "Toggle Hud On/Off"
+  "key.pl3xmap.togglemod": "Toggle On/Off",
+  "key.pl3xmap.toggleminimap": "Toggle Minimap On/Off"
 }

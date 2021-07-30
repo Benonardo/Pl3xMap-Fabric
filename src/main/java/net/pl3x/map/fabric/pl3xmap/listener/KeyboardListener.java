@@ -1,8 +1,10 @@
 package net.pl3x.map.fabric.pl3xmap.listener;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.pl3x.map.fabric.pl3xmap.Pl3xMap;
-import net.pl3x.map.fabric.pl3xmap.data.Key;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -18,10 +20,31 @@ public class KeyboardListener {
 
     public void initialize() {
         this.keys.addAll(List.of(
-                new Key("key.pl3xmap.enabled", "category.pl3xmap.keybinds", GLFW.GLFW_KEY_N, this.pl3xmap::toggleOnOff)
-                //new Key("key.pl3xmap.togglehud", "category.pl3xmap.keybinds", GLFW.GLFW_KEY_M, this.pl3xmap::toggleMiniMap)
+                new Key("key.pl3xmap.togglemod", "category.pl3xmap.keybinds", GLFW.GLFW_KEY_N, this.pl3xmap::toggleOnOff),
+                new Key("key.pl3xmap.toggleminimap", "category.pl3xmap.keybinds", GLFW.GLFW_KEY_M, this.pl3xmap::toggleMiniMap)
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> this.keys.forEach(Key::check));
+    }
+
+    private static class Key {
+        private final KeyBinding binding;
+        private final Press press;
+
+        private Key(String name, String category, int key, Press press) {
+            this.binding = KeyBindingHelper.registerKeyBinding(new KeyBinding(name, InputUtil.Type.KEYSYM, key, category));
+            this.press = press;
+        }
+
+        private void check() {
+            while (this.binding.wasPressed()) {
+                this.press.execute();
+            }
+        }
+
+        @FunctionalInterface
+        private interface Press {
+            void execute();
+        }
     }
 }
