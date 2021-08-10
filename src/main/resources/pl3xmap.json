@@ -11,10 +11,10 @@
     "directions": true,
     "coordinates": true,
     "updateInterval": 3,
-    "centerX": 353,
-    "centerZ": 74,
     "anchorX": 100,
     "anchorZ": 0,
+    "anchorOffsetX": -72,
+    "anchorOffsetZ": 72,
     "size": 128,
     "zoom": 3
   }
