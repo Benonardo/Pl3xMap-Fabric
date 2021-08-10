@@ -1,0 +1,21 @@
+{
+  "renderer": {
+    "enabled": true,
+    "fogOfWar": true
+  },
+  "minimap": {
+    "enabled": true,
+    "northLock": false,
+    "circular": true,
+    "drawFrame": true,
+    "directions": true,
+    "coordinates": true,
+    "updateInterval": 3,
+    "centerX": 353,
+    "centerZ": 74,
+    "anchorX": 100,
+    "anchorZ": 0,
+    "size": 128,
+    "zoom": 3
+  }
+}

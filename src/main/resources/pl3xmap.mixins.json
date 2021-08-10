@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.pl3x.map.fabric.pl3xmap.mixin",
+  "package": "net.pl3x.map.fabric.mixin",
   "compatibilityLevel": "JAVA_16",
   "refmap": "pl3xmap.refmap.json",
   "client": [

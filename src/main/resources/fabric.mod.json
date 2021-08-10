@@ -3,22 +3,24 @@
   "id": "pl3xmap",
   "version": "${version}",
   "name": "Pl3xMap",
-  "description": "View in-game maps using Pl3xMap tiles",
+  "description": "Pl3xMap is a minimalistic and lightweight world map viewer for Paper servers using the vanilla Minecraft rendering style.\nThis mod replaces in-game maps using the Pl3xMap tiles to make them look better.\nOther features include\n  * MiniMap HUD\n  * Full screen map viewer",
   "authors": [
     "BillyGalbreath"
   ],
   "contact": {
     "homepage": "https://map.pl3x.net/",
     "issues": "https://github.com/pl3xgaming/Pl3xMap-Fabric/issues",
-    "sources": "https://github.com/pl3xgaming/Pl3xMap-Fabric",
-    "discord": "https://discord.gg/B8WpDPXeBh"
+    "sources": "https://github.com/pl3xgaming/Pl3xMap-Fabric"
   },
   "license": "MIT",
   "icon": "assets/icon.png",
   "environment": "client",
   "entrypoints": {
     "main": [
-      "net.pl3x.map.fabric.pl3xmap.Pl3xMap"
+      "net.pl3x.map.fabric.Pl3xMap"
+    ],
+    "modmenu": [
+      "net.pl3x.map.fabric.gui.screen.ModMenuImpl"
     ]
   },
   "mixins": [
@@ -29,5 +31,13 @@
     "fabricloader": ">=0.11.6",
     "fabric": "*",
     "minecraft": "1.17.1"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/B8WpDPXeBh",
+        "pl3xmap.plugin.link": "https://github.com/pl3xgaming/Pl3xMap"
+      }
+    }
   }
 }

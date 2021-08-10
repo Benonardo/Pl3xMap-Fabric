@@ -1,5 +1,49 @@
 {
-  "category.pl3xmap.keybinds": "Pl3xMap",
-  "key.pl3xmap.togglemod": "Toggle On/Off",
-  "key.pl3xmap.toggleminimap": "Toggle Minimap On/Off"
+  "pl3xmap.plugin.link": "Server Plugin",
+
+  "pl3xmap.key.category": "Pl3xMap",
+  "pl3xmap.key.options.open": "Open map options menu",
+  "pl3xmap.key.minimap.zoom.increase": "Minimap zoom out",
+  "pl3xmap.key.minimap.zoom.decrease": "Minimap zoom in",
+
+  "pl3xmap.screen.position.size": "Size: %s Zoom: %s",
+  "pl3xmap.screen.position.center": "Position: %s, %s",
+  "pl3xmap.screen.position.help1": "Drag the minimap to position",
+  "pl3xmap.screen.position.help2": "Mouse wheel to zoom",
+  "pl3xmap.screen.position.help3": "CTRL + mouse wheel to resize",
+  "pl3xmap.screen.position.help4": "Press ESC when done",
+
+  "pl3xmap.screen.options.title": "Pl3xMap",
+
+  "pl3xmap.screen.options.on": "§aOn",
+  "pl3xmap.screen.options.off": "§cOff",
+  "pl3xmap.screen.options.yes": "§aYes",
+  "pl3xmap.screen.options.no": "§cNo",
+
+  "pl3xmap.screen.options.renderer.title": "Map Item Renderer",
+  "pl3xmap.screen.options.renderer.enabled": "Map Renderer",
+  "pl3xmap.screen.options.renderer.enabled.tooltip": "Toggle the in-game map renderer",
+  "pl3xmap.screen.options.renderer.fog-of-war": "Fog of War",
+  "pl3xmap.screen.options.renderer.fog-of-war.tooltip": "Toggle fog of war for the in-game map renderer",
+
+  "pl3xmap.screen.options.minimap.title": "Minimap Options",
+  "pl3xmap.screen.options.minimap.enabled": "Minimap Enabled",
+  "pl3xmap.screen.options.minimap.enabled.tooltip": "Toggle the minimap on/off",
+  "pl3xmap.screen.options.minimap.north-locked": "North Locked",
+  "pl3xmap.screen.options.minimap.north-locked.tooltip": "Sets if the minimap should lock with the north position facing up",
+  "pl3xmap.screen.options.minimap.frame": "Frame",
+  "pl3xmap.screen.options.minimap.frame.tooltip": "Shows frame around the minimap",
+  "pl3xmap.screen.options.minimap.circular": "Circular",
+  "pl3xmap.screen.options.minimap.circular.tooltip": "Choose between circular and square minimap shapes",
+  "pl3xmap.screen.options.minimap.directions": "Cardinal Directions",
+  "pl3xmap.screen.options.minimap.directions.tooltip": "Shows the cardinal directions around the minimap",
+  "pl3xmap.screen.options.minimap.coordinates": "Coordinates",
+  "pl3xmap.screen.options.minimap.coordinates.tooltip": "Shows your coordinates under the minimap",
+  "pl3xmap.screen.options.minimap.update-interval": "Update Interval",
+  "pl3xmap.screen.options.minimap.update-interval.tooltip": "How many ticks between updates\nNote: Lower values may cause lag",
+  "pl3xmap.screen.options.minimap.position-size-zoom": "Position, Size, Zoom",
+  "pl3xmap.screen.options.minimap.position-size-zoom.tooltip": "Set the position, size, and zoom of the minimap",
+  "pl3xmap.screen.options.minimap.position-size-zoom.error": "§cCannot load minimap...",
+
+  "pl3xmap.error.server.incompatible": "This server is running an incompatible Pl3xMap version"
 }
