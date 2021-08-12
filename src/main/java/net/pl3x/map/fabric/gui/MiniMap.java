@@ -5,43 +5,21 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.world.World;
 import net.pl3x.map.fabric.Pl3xMap;
 import net.pl3x.map.fabric.configuration.MiniMapConfig;
+import net.pl3x.map.fabric.manager.TextureManager;
 import net.pl3x.map.fabric.scheduler.Task;
 import net.pl3x.map.fabric.tiles.Tile;
-import net.pl3x.map.fabric.util.Constants;
 import net.pl3x.map.fabric.util.Image;
 import org.lwjgl.opengl.GL11;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
 public class MiniMap {
     private final static int MAP_SIZE = 512;
-
-    private final static Identifier FRAME_CIRCLE = new Identifier(Constants.MODID, "minimap_frame_circle_texture");
-    private final static Identifier FRAME_SQUARE = new Identifier(Constants.MODID, "minimap_frame_square_texture");
-    private final static Identifier MASK_CIRCLE = new Identifier(Constants.MODID, "minimap_mask_circle_texture");
-    private final static Identifier MASK_SQUARE = new Identifier(Constants.MODID, "minimap_mask_square_texture");
-    private final static Identifier MAP = new Identifier(Constants.MODID, "minimap_map_texture");
-    private final static Identifier SELF = new Identifier(Constants.MODID, "minimap_self_texture");
-    private final static Identifier OVERWORLD_SKY = new Identifier(Constants.MODID, "minimap_overworld_sky_texture");
-    private final static Identifier NETHER_SKY = new Identifier(Constants.MODID, "minimap_nether_sky_texture");
-    private final static Identifier END_SKY = new Identifier(Constants.MODID, "minimap_end_sky_texture");
 
     private final Pl3xMap pl3xmap;
     private final MinecraftClient client;
@@ -93,7 +71,7 @@ public class MiniMap {
     private final Object lock = new Object();
     private boolean updating;
 
-    private UpdateMiniMap updateTask;
+    private UpdateTask updateTask;
 
     public MiniMap(Pl3xMap pl3xmap) {
         this.pl3xmap = pl3xmap;
@@ -106,6 +84,10 @@ public class MiniMap {
                 return;
             }
             if (this.client.options.debugEnabled) {
+                return;
+            }
+            // do not show minimap if no pl3x world set
+            if (this.pl3xmap.getWorld() == null) {
                 return;
             }
             this.render(matrixStack, delta);
@@ -132,15 +114,7 @@ public class MiniMap {
 
         if (this.mapTexture == null) {
             this.mapTexture = new NativeImageBackedTexture(MAP_SIZE, MAP_SIZE, true);
-            this.client.getTextureManager().registerTexture(MAP, this.mapTexture);
-            loadTexture(FRAME_CIRCLE, "/assets/pl3xmap/gui/frame_circle.png");
-            loadTexture(FRAME_SQUARE, "/assets/pl3xmap/gui/frame_square.png");
-            loadTexture(MASK_CIRCLE, "/assets/pl3xmap/gui/mask_circle.png");
-            loadTexture(MASK_SQUARE, "/assets/pl3xmap/gui/mask_square.png");
-            loadTexture(SELF, "/assets/pl3xmap/gui/player.png");
-            loadTexture(OVERWORLD_SKY, "/assets/pl3xmap/gui/overworld_sky.png");
-            loadTexture(NETHER_SKY, "/assets/pl3xmap/gui/nether_sky.png");
-            loadTexture(END_SKY, "/assets/pl3xmap/gui/end_sky.png");
+            this.client.getTextureManager().registerTexture(TextureManager.MAP, this.mapTexture);
         }
 
         MiniMapConfig config = this.pl3xmap.getConfig().getMinimap();
@@ -164,7 +138,7 @@ public class MiniMap {
 
         updateCenter();
 
-        this.updateTask = new UpdateMiniMap(config.getUpdateInterval());
+        this.updateTask = new UpdateTask(config.getUpdateInterval());
         this.pl3xmap.getScheduler().addTask(this.updateTask);
 
         this.deltaZoom = 0.0F;
@@ -179,6 +153,8 @@ public class MiniMap {
             this.updateTask.cancel();
         }
         this.updateTask = null;
+
+        this.mapTexture = null;
     }
 
     public void setVisible(boolean visible) {
@@ -264,11 +240,12 @@ public class MiniMap {
         this.pl3xmap.getConfig().getMinimap().setZoom(this.zoomLevel);
     }
 
-    public float deltaZoom(float delta) {
+    public void tickDeltaZoom(float delta) {
         if (Math.abs(this.zoom - this.deltaZoom) > 0.01F) {
             this.deltaZoom = this.deltaZoom + delta / 5F * (this.zoom - this.deltaZoom);
+        } else {
+            this.deltaZoom = this.zoom;
         }
-        return this.deltaZoom;
     }
 
     public void setUpdateInterval(int value) {
@@ -328,26 +305,12 @@ public class MiniMap {
         }
     }
 
-    private void loadTexture(Identifier identifier, String resource) {
-        InputStream stream = Pl3xMap.class.getResourceAsStream(resource);
-        if (stream == null) {
-            return;
-        }
-        try {
-            NativeImageBackedTexture texture = new NativeImageBackedTexture(512, 512, true);
-            texture.setImage(NativeImage.read(stream));
-            texture.upload();
-            this.client.getTextureManager().registerTexture(identifier, texture);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void updateMapTexture() {
         if (!this.enabled || !this.visible) {
             return;
         }
         if (this.updating) {
+            //updating = false;
             return;
         }
         if (this.pl3xmap.getWorld() == null) {
@@ -366,35 +329,47 @@ public class MiniMap {
                     for (z = 0; z < MAP_SIZE; z++) {
                         blockX = startX + x;
                         blockZ = startZ + z;
-                        this.tile = this.pl3xmap.getTileManager().get(this.pl3xmap.getWorld(), blockX >> 9, blockZ >> 9);
-                        this.image.setPixel(x, z, this.tile == null ? 0x00000000 : this.tile.getImage().getPixel(blockX & 511, blockZ & 511));
-                    }
-                }
-            }
-        }).whenComplete((consumer, throwable) -> {
-            int x, z;
-            synchronized (this.lock) {
-                for (x = 0; x < MAP_SIZE; x++) {
-                    for (z = 0; z < MAP_SIZE; z++) {
+                        this.tile = this.pl3xmap.getTileManager().get(this.pl3xmap.getWorld(), blockX >> 9, blockZ >> 9, this.pl3xmap.getWorld().getZoomMax());
+                        this.image.setPixel(x, z, this.tile == null ? 0 : this.tile.getImage().getPixel(blockX & 511, blockZ & 511));
                         this.mapTexture.getImage().setPixelColor(x, z, this.image.getPixel(x, z));
                     }
                 }
                 this.mapTexture.upload();
                 this.updating = false;
             }
+        }).exceptionally(throwable -> {
+            this.updating = false;
+            if (throwable != null) {
+                throwable.printStackTrace();
+            }
+            return null;
+        }).whenComplete((consumer, throwable) -> {
+            this.updating = false;
+            if (throwable != null) {
+                throwable.printStackTrace();
+            }
         });
     }
 
     public void render(MatrixStack matrixStack, float delta) {
+        TextureManager tex = this.pl3xmap.getTextureManager();
+
         // get fresh reference to player since vanilla destroys this object on dimension change
         this.player = this.client.player;
 
         // setup opengl stuff - this ensures we draw how we expect in case another mod left without cleaning up
+        matrixStack.push();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
+        RenderSystem.enableDepthTest();
+
+        // tuck it behind chat/hotbar
+        matrixStack.translate(0.0D, 0.0D, -999.9D);
+
+        tickDeltaZoom(this.client.getLastFrameDuration());
 
         // setup texture size stuff - most of this is used multiple times so these act like a "cache" for this frame
-        float zoomDelta = this.deltaZoom(this.client.getLastFrameDuration());
+        float zoomDelta = this.deltaZoom; // things happen so fast this can change a few lines apart here
         float scale = this.size / zoomDelta;
         float halfScale = scale / 2F;
         float markerOffset = scale / (scale * 2);
@@ -416,7 +391,7 @@ public class MiniMap {
         // on circle maps and prevents corners from extending beyond the frame on rotating square maps.
         RenderSystem.blendFuncSeparate(GL11.GL_ZERO, GL11.GL_ONE, GL11.GL_SRC_COLOR, GL11.GL_ZERO);
         {
-            RenderSystem.setShaderTexture(0, this.circular ? MASK_CIRCLE : MASK_SQUARE);
+            RenderSystem.setShaderTexture(0, this.circular ? TextureManager.MASK_CIRCLE : TextureManager.MASK_SQUARE);
             DrawableHelper.drawTexture(matrixStack, this.left - this.halfSize, this.top - this.halfSize, 0, 0, 0, this.doubleSize, this.doubleSize, this.doubleSize, this.doubleSize);
         }
 
@@ -424,14 +399,7 @@ public class MiniMap {
         RenderSystem.blendFunc(GL11.GL_DST_ALPHA, GL11.GL_ONE_MINUS_DST_ALPHA);
         {
             matrixStack.push();
-            if (this.player.world.getRegistryKey() == World.NETHER) {
-                RenderSystem.setShaderTexture(0, NETHER_SKY);
-            } else if (this.player.world.getRegistryKey() == World.END) {
-                RenderSystem.setShaderTexture(0, END_SKY);
-            } else {
-                RenderSystem.setShaderTexture(0, OVERWORLD_SKY);
-            }
-            drawLayer(matrixStack, x0 - halfScale, y0 + halfScale, x1 - halfScale, y1 + halfScale, u2, v2);
+            tex.drawTexture(matrixStack, tex.getTexture(this.player.world), x0 - halfScale, y0 + halfScale, x1 - halfScale, y1 + halfScale, u2, v2);
             matrixStack.pop();
         }
 
@@ -447,8 +415,7 @@ public class MiniMap {
                 }
                 rotateScene(matrixStack, this.centerX, this.centerZ, -angle);
             }
-            RenderSystem.setShaderTexture(0, MAP);
-            drawLayer(matrixStack, x0 - halfScale, y0 + halfScale, x1 - halfScale, y1 + halfScale, u, v);
+            tex.drawTexture(matrixStack, TextureManager.MAP, x0 - halfScale, y0 + halfScale, x1 - halfScale, y1 + halfScale, u, v);
             matrixStack.pop();
         }
 
@@ -462,14 +429,13 @@ public class MiniMap {
                 // only allow rotating if map is not rotating or if northlocked
                 rotateScene(matrixStack, this.centerX, this.centerZ, angle);
             }
-            RenderSystem.setShaderTexture(0, SELF);
-            drawLayer(matrixStack, x0 + markerOffset, y0, x1 + markerOffset, y1, u2, v2);
+            tex.drawTexture(matrixStack, TextureManager.SELF, x0 + markerOffset, y0, x1 + markerOffset, y1, u2, v2);
             matrixStack.pop();
         }
 
         // draw the frame
         if (this.showFrame) {
-            RenderSystem.setShaderTexture(0, this.circular ? FRAME_CIRCLE : FRAME_SQUARE);
+            RenderSystem.setShaderTexture(0, this.circular ? TextureManager.FRAME_CIRCLE : TextureManager.FRAME_SQUARE);
             DrawableHelper.drawTexture(matrixStack, this.left, this.top, 0, 0, 0, this.size, this.size, this.size, this.size);
         }
 
@@ -516,20 +482,9 @@ public class MiniMap {
         }
 
         // done
+        RenderSystem.disableDepthTest();
         RenderSystem.disableBlend();
-    }
-
-    private void drawLayer(MatrixStack matrixStack, float x0, float y0, float x1, float y1, float u, float v) {
-        Matrix4f model = matrixStack.peek().getModel();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        bufferBuilder.vertex(model, x0, y1, 0F).texture(u, v).next();
-        bufferBuilder.vertex(model, x1, y1, 0F).texture(v, v).next();
-        bufferBuilder.vertex(model, x1, y0, 0F).texture(v, u).next();
-        bufferBuilder.vertex(model, x0, y0, 0F).texture(u, u).next();
-        bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        matrixStack.pop();
     }
 
     private void text(MatrixStack matrixStack, String text, int x, int y) {
@@ -585,11 +540,11 @@ public class MiniMap {
         }
     }
 
-    private class UpdateMiniMap extends Task {
+    private class UpdateTask extends Task {
         private int updateInterval;
         private int tick;
 
-        private UpdateMiniMap(int updateInterval) {
+        private UpdateTask(int updateInterval) {
             super(0, true);
             this.updateInterval = updateInterval;
         }

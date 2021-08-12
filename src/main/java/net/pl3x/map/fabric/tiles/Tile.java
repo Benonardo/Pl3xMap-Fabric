@@ -1,8 +1,14 @@
 package net.pl3x.map.fabric.tiles;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
+import net.pl3x.map.fabric.Pl3xMap;
+import net.pl3x.map.fabric.util.Constants;
 import net.pl3x.map.fabric.util.Image;
 import net.pl3x.map.fabric.util.World;
-import net.pl3x.map.fabric.util.Constants;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -13,17 +19,37 @@ public class Tile {
     private final World world;
     private final int x;
     private final int z;
+    private final int zoom;
     private final Image image;
     private final Object lock = new Object();
 
+    private final Identifier identifier;
+    private NativeImageBackedTexture texture;
+
     private long lastUsed;
 
-    public Tile(World world, int x, int z) {
+    public Tile(World world, int x, int z, int zoom) {
         this.world = world;
         this.x = x;
         this.z = z;
+        this.zoom = zoom;
         this.image = new Image(SIZE);
         updateLastUsed();
+
+        this.identifier = new Identifier(Constants.MODID, world.getName() + "." + zoom + "." + x + "." + z);
+
+        initTexture();
+    }
+
+    private void initTexture() {
+        if (!RenderSystem.isOnRenderThread()) {
+            RenderSystem.recordRenderCall(this::initTexture);
+            return;
+        }
+        synchronized (lock) {
+            this.texture = new NativeImageBackedTexture(SIZE, SIZE, true);
+            MinecraftClient.getInstance().getTextureManager().registerTexture(this.identifier, this.texture);
+        }
     }
 
     public World getWorld() {
@@ -38,6 +64,10 @@ public class Tile {
         return this.z;
     }
 
+    public int getZoom() {
+        return this.zoom;
+    }
+
     public Image getImage() {
         updateLastUsed();
         synchronized (this.lock) {
@@ -45,29 +75,49 @@ public class Tile {
         }
     }
 
-    public void updateImage() {
-        this.lastUsed = Integer.MIN_VALUE;
-    }
-
     public long lastUsed() {
         return this.lastUsed;
     }
 
-    private void updateLastUsed() {
-        if (this.lastUsed >= 0) {
-            this.lastUsed = System.currentTimeMillis();
-        }
+    public void updateLastUsed() {
+        this.lastUsed = System.currentTimeMillis();
     }
 
     public void setImage(BufferedImage bufferedImage) {
-        synchronized (this.lock) {
-            for (int x = 0; x < SIZE; x++) {
-                for (int z = 0; z < SIZE; z++) {
-                    this.image.setPixel(x, z, rgb2bgr(bufferedImage.getRGB(x, z)));
+        if (bufferedImage != null) {
+            synchronized (this.lock) {
+                for (int x = 0; x < SIZE; x++) {
+                    for (int z = 0; z < SIZE; z++) {
+                        this.image.setPixel(x, z, rgb2bgr(bufferedImage.getRGB(x, z)));
+                    }
                 }
             }
         }
+        updateTexture();
+    }
+
+    public void updateTexture() {
+        synchronized (lock) {
+            if (this.texture == null || this.texture.getImage() == null) {
+                Pl3xMap.instance().getScheduler().addTask(20, this::updateTexture);
+                return;
+            }
+            for (int x = 0; x < SIZE; x++) {
+                for (int z = 0; z < SIZE; z++) {
+                    this.texture.getImage().setPixelColor(x, z, this.image.getPixel(x, z));
+                }
+            }
+            this.texture.upload();
+        }
+    }
+
+    public void render(MatrixStack matrixStack, float x, float y) {
+        render(matrixStack, x, y, x + SIZE, y + SIZE, 0F, 0F, 1F, 1F);
+    }
+
+    public void render(MatrixStack matrixStack, float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1) {
         updateLastUsed();
+        Pl3xMap.instance().getTextureManager().drawTexture(matrixStack, this.identifier, x0, y0, x1, y1, u0, v0, u1, v1);
     }
 
     private int rgb2bgr(int color) {
@@ -81,12 +131,17 @@ public class Tile {
     }
 
     public File getFile() {
-        File dir = new File(Constants.MODID, this.world.getUUID().toString());
+        File dir = new File(new File(new File(Constants.MODID, ip()), this.world.getName()), String.valueOf(this.zoom));
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
                 throw new IllegalStateException("Cannot create tiles directory for " + this.world);
             }
         }
         return new File(dir, this.x + "_" + this.z + ".png");
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private String ip() {
+        return MinecraftClient.getInstance().getCurrentServerEntry().address;
     }
 }

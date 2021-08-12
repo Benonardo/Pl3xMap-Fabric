@@ -1,9 +1,10 @@
-package net.pl3x.map.fabric.gui.screen;
+package net.pl3x.map.fabric.gui;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
+import net.pl3x.map.fabric.gui.screen.OptionsScreen;
 
-public class ModMenuImpl implements ModMenuApi {
+public class ModMenu implements ModMenuApi {
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
         return OptionsScreen::new;
     }

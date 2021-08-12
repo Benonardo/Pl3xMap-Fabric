@@ -1,9 +1,11 @@
 package net.pl3x.map.fabric.gui.screen;
 
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.pl3x.map.fabric.Pl3xMap;
 import net.pl3x.map.fabric.configuration.options.BooleanOption;
@@ -16,12 +18,35 @@ import java.util.List;
 
 public class OptionsScreen extends AbstractScreen {
     private List<ClickableWidget> options;
-    private final String strRenderer;
-    private final String strMinimap;
-    private final String strOn;
-    private final String strOff;
-    private final String strYes;
-    private final String strNo;
+    private static final String RENDERER = I18n.translate("pl3xmap.screen.options.renderer.title");
+    private static final String MINIMAP = I18n.translate("pl3xmap.screen.options.minimap.title");
+
+    private static final Text RENDERER_ENABLED = new TranslatableText("pl3xmap.screen.options.renderer.enabled");
+    private static final Text RENDERER_ENABLED_TOOLTIP = new TranslatableText("pl3xmap.screen.options.renderer.enabled.tooltip");
+    private static final Text FOG_OF_WAR = new TranslatableText("pl3xmap.screen.options.renderer.fog-of-war");
+    private static final Text FOG_OF_WAR_TOOLTIP = new TranslatableText("pl3xmap.screen.options.renderer.fog-of-war.tooltip");
+    private static final Text MINIMAP_ENABLED = new TranslatableText("pl3xmap.screen.options.minimap.enabled");
+    private static final Text MINIMAP_ENABLED_TOOLTIP = new TranslatableText("pl3xmap.screen.options.minimap.enabled.tooltip");
+    private static final Text NORTH_LOCKED = new TranslatableText("pl3xmap.screen.options.minimap.north-locked");
+    private static final Text NORTH_LOCKED_TOOLTIP = new TranslatableText("pl3xmap.screen.options.minimap.north-locked.tooltip");
+    private static final Text FRAME = new TranslatableText("pl3xmap.screen.options.minimap.frame");
+    private static final Text FRAME_TOOLTIP = new TranslatableText("pl3xmap.screen.options.minimap.frame.tooltip");
+    private static final Text CIRCULAR = new TranslatableText("pl3xmap.screen.options.minimap.circular");
+    private static final Text CIRCULAR_TOOLTIP = new TranslatableText("pl3xmap.screen.options.minimap.circular.tooltip");
+    private static final Text DIRECTIONS = new TranslatableText("pl3xmap.screen.options.minimap.directions");
+    private static final Text DIRECTIONS_TOOLTIP = new TranslatableText("pl3xmap.screen.options.minimap.directions.tooltip");
+    private static final Text COORDINATES = new TranslatableText("pl3xmap.screen.options.minimap.coordinates");
+    private static final Text COORDINATES_TOOLTIP = new TranslatableText("pl3xmap.screen.options.minimap.coordinates.tooltip");
+    private static final Text UPDATE_INTERVAL = new TranslatableText("pl3xmap.screen.options.minimap.update-interval");
+    private static final Text UPDATE_INTERVAL_TOOLTIP = new TranslatableText("pl3xmap.screen.options.minimap.update-interval.tooltip");
+    private static final Text POSITION_SIZE_ZOOM = new TranslatableText("pl3xmap.screen.options.minimap.position-size-zoom");
+    private static final Text POSITION_SIZE_ZOOM_TOOLTIP = new TranslatableText("pl3xmap.screen.options.minimap.position-size-zoom.tooltip");
+    private static final Text POSITION_SIZE_ZOOM_ERROR = new TranslatableText("pl3xmap.screen.options.minimap.position-size-zoom.error");
+
+    private static final String ON = "§a" + ScreenTexts.ON.getString();
+    private static final String OFF = "§c" + ScreenTexts.OFF.getString();
+    private static final String YES = "§a" + ScreenTexts.YES.getString();
+    private static final String NO = "§c" + ScreenTexts.NO.getString();
 
     public OptionsScreen(Screen parent) {
         this(Pl3xMap.instance(), parent);
@@ -29,23 +54,19 @@ public class OptionsScreen extends AbstractScreen {
 
     public OptionsScreen(Pl3xMap pl3xmap, Screen parent) {
         super(pl3xmap, parent);
-
-        this.strRenderer = I18n.translate("pl3xmap.screen.options.renderer.title");
-        this.strMinimap = I18n.translate("pl3xmap.screen.options.minimap.title");
-        this.strOn = I18n.translate("pl3xmap.screen.options.on");
-        this.strOff = I18n.translate("pl3xmap.screen.options.off");
-        this.strYes = I18n.translate("pl3xmap.screen.options.yes");
-        this.strNo = I18n.translate("pl3xmap.screen.options.no");
     }
 
     @Override
     public void init() {
+        if (this.client != null && parent instanceof FullMapScreen) {
+            this.parent.init(this.client, this.width, this.height);
+        }
+
         int center = (int) (this.width / 2F);
 
         this.options = List.of(
                 new Button(this, center - 154, 65, 150, 20, new BooleanOption(
-                        new TranslatableText("pl3xmap.screen.options.renderer.enabled"),
-                        new TranslatableText("pl3xmap.screen.options.renderer.enabled.tooltip"),
+                        RENDERER_ENABLED, RENDERER_ENABLED_TOOLTIP,
                         () -> this.pl3xmap.getConfig().getRenderer().getEnabled(),
                         value -> {
                             this.pl3xmap.getConfig().getRenderer().setEnabled(value);
@@ -54,23 +75,21 @@ public class OptionsScreen extends AbstractScreen {
                 )) {
                     @Override
                     public String getStringValue() {
-                        return getOption().getValue() ? strOn : strOff;
+                        return getOption().getValue() ? ON : OFF;
                     }
                 },
                 new Button(this, center + 4, 65, 150, 20, new BooleanOption(
-                        new TranslatableText("pl3xmap.screen.options.renderer.fog-of-war"),
-                        new TranslatableText("pl3xmap.screen.options.renderer.fog-of-war.tooltip"),
+                        FOG_OF_WAR, FOG_OF_WAR_TOOLTIP,
                         () -> this.pl3xmap.getConfig().getRenderer().getFogOfWar(),
                         value -> this.pl3xmap.getConfig().getRenderer().setFogOfWar(value)
                 )) {
                     @Override
                     public String getStringValue() {
-                        return getOption().getValue() ? strOn : strOff;
+                        return getOption().getValue() ? ON : OFF;
                     }
                 },
                 new Button(this, center - 154, 110, 150, 20, new BooleanOption(
-                        new TranslatableText("pl3xmap.screen.options.minimap.enabled"),
-                        new TranslatableText("pl3xmap.screen.options.minimap.enabled.tooltip"),
+                        MINIMAP_ENABLED, MINIMAP_ENABLED_TOOLTIP,
                         () -> this.pl3xmap.getConfig().getMinimap().getEnabled(),
                         value -> {
                             this.pl3xmap.getConfig().getMinimap().setEnabled(value);
@@ -83,12 +102,11 @@ public class OptionsScreen extends AbstractScreen {
                 )) {
                     @Override
                     public String getStringValue() {
-                        return getOption().getValue() ? strYes : strNo;
+                        return getOption().getValue() ? YES : NO;
                     }
                 },
                 new Button(this, center + 4, 110, 150, 20, new BooleanOption(
-                        new TranslatableText("pl3xmap.screen.options.minimap.north-locked"),
-                        new TranslatableText("pl3xmap.screen.options.minimap.north-locked.tooltip"),
+                        NORTH_LOCKED, NORTH_LOCKED_TOOLTIP,
                         () -> this.pl3xmap.getConfig().getMinimap().getNorthLock(),
                         value -> {
                             this.pl3xmap.getConfig().getMinimap().setNorthLock(value);
@@ -97,12 +115,11 @@ public class OptionsScreen extends AbstractScreen {
                 )) {
                     @Override
                     public String getStringValue() {
-                        return getOption().getValue() ? strYes : strNo;
+                        return getOption().getValue() ? YES : NO;
                     }
                 },
                 new Button(this, center - 154, 135, 150, 20, new BooleanOption(
-                        new TranslatableText("pl3xmap.screen.options.minimap.frame"),
-                        new TranslatableText("pl3xmap.screen.options.minimap.frame.tooltip"),
+                        FRAME, FRAME_TOOLTIP,
                         () -> this.pl3xmap.getConfig().getMinimap().getDrawFrame(),
                         value -> {
                             this.pl3xmap.getConfig().getMinimap().setDrawFrame(value);
@@ -111,12 +128,11 @@ public class OptionsScreen extends AbstractScreen {
                 )) {
                     @Override
                     public String getStringValue() {
-                        return getOption().getValue() ? strOn : strOff;
+                        return getOption().getValue() ? ON : OFF;
                     }
                 },
                 new Button(this, center + 4, 135, 150, 20, new BooleanOption(
-                        new TranslatableText("pl3xmap.screen.options.minimap.circular"),
-                        new TranslatableText("pl3xmap.screen.options.minimap.circular.tooltip"),
+                        CIRCULAR, CIRCULAR_TOOLTIP,
                         () -> this.pl3xmap.getConfig().getMinimap().getCircular(),
                         value -> {
                             this.pl3xmap.getConfig().getMinimap().setCircular(value);
@@ -125,12 +141,11 @@ public class OptionsScreen extends AbstractScreen {
                 )) {
                     @Override
                     public String getStringValue() {
-                        return getOption().getValue() ? strYes : strNo;
+                        return getOption().getValue() ? YES : NO;
                     }
                 },
                 new Button(this, center - 154, 160, 150, 20, new BooleanOption(
-                        new TranslatableText("pl3xmap.screen.options.minimap.directions"),
-                        new TranslatableText("pl3xmap.screen.options.minimap.directions.tooltip"),
+                        DIRECTIONS, DIRECTIONS_TOOLTIP,
                         () -> this.pl3xmap.getConfig().getMinimap().getDirections(),
                         value -> {
                             this.pl3xmap.getConfig().getMinimap().setDirections(value);
@@ -139,12 +154,11 @@ public class OptionsScreen extends AbstractScreen {
                 )) {
                     @Override
                     public String getStringValue() {
-                        return getOption().getValue() ? strOn : strOff;
+                        return getOption().getValue() ? ON : OFF;
                     }
                 },
                 new Button(this, center + 4, 160, 150, 20, new BooleanOption(
-                        new TranslatableText("pl3xmap.screen.options.minimap.coordinates"),
-                        new TranslatableText("pl3xmap.screen.options.minimap.coordinates.tooltip"),
+                        COORDINATES, COORDINATES_TOOLTIP,
                         () -> this.pl3xmap.getConfig().getMinimap().getCoordinates(),
                         value -> {
                             this.pl3xmap.getConfig().getMinimap().setCoordinates(value);
@@ -153,13 +167,11 @@ public class OptionsScreen extends AbstractScreen {
                 )) {
                     @Override
                     public String getStringValue() {
-                        return getOption().getValue() ? strOn : strOff;
+                        return getOption().getValue() ? ON : OFF;
                     }
                 },
                 new Slider(this, center - 154, 185, 150, 20, new IntegerOption(
-                        new TranslatableText("pl3xmap.screen.options.minimap.update-interval"),
-                        new TranslatableText("pl3xmap.screen.options.minimap.update-interval.tooltip"),
-                        0, 20,
+                        UPDATE_INTERVAL, UPDATE_INTERVAL_TOOLTIP, 0, 20,
                         () -> this.pl3xmap.getConfig().getMinimap().getUpdateInterval(),
                         value -> {
                             this.pl3xmap.getConfig().getMinimap().setUpdateInterval(value);
@@ -167,16 +179,15 @@ public class OptionsScreen extends AbstractScreen {
                         }
                 )),
                 new Button(this, center + 4, 185, 150, 20,
-                        new TranslatableText("pl3xmap.screen.options.minimap.position-size-zoom"),
-                        new TranslatableText("pl3xmap.screen.options.minimap.position-size-zoom.tooltip"),
+                        POSITION_SIZE_ZOOM, POSITION_SIZE_ZOOM_TOOLTIP,
                         (button) -> {
-                            if (this.pl3xmap.getMiniMap().isEnabled() && this.pl3xmap.getServerManager().isOnServer() && this.pl3xmap.getServerManager().getUrl() != null) {
+                            if (this.pl3xmap.getMiniMap().isEnabled() && this.pl3xmap.getServerManager().isOnServer() && this.pl3xmap.getServerManager().getUrl() != null && this.pl3xmap.getWorld() != null) {
                                 openScreen(new PositionScreen(this.pl3xmap, this));
                             } else {
                                 button.active = false;
-                                button.setMessage(new TranslatableText("pl3xmap.screen.options.minimap.position-size-zoom.error"));
+                                button.setMessage(POSITION_SIZE_ZOOM_ERROR);
                                 this.pl3xmap.getScheduler().addTask(40, () -> {
-                                    button.setMessage(new TranslatableText("pl3xmap.screen.options.minimap.position-size-zoom"));
+                                    button.setMessage(POSITION_SIZE_ZOOM);
                                     button.active = true;
                                 });
                             }
@@ -189,12 +200,19 @@ public class OptionsScreen extends AbstractScreen {
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+        int centerX = (int) (this.width / 2F);
+
+        if (parent instanceof FullMapScreen) {
+            int centerY = (int) (this.height / 2F);
+            this.parent.render(matrixStack, centerX, centerY, 0);
+        }
+
         super.render(matrixStack, mouseX, mouseY, delta);
 
-        int center = (int) (this.width / 2F);
+        drawText(matrixStack, this.title, centerX, 15);
 
-        drawText(matrixStack, this.strRenderer, center, 50);
-        drawText(matrixStack, this.strMinimap, center, 95);
+        drawText(matrixStack, RENDERER, centerX, 50);
+        drawText(matrixStack, MINIMAP, centerX, 95);
     }
 
     @Override

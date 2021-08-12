@@ -2,9 +2,13 @@
   "pl3xmap.plugin.link": "Server Plugin",
 
   "pl3xmap.key.category": "Pl3xMap",
+  "pl3xmap.key.full-map.open": "Open full screen map",
   "pl3xmap.key.options.open": "Open map options menu",
   "pl3xmap.key.minimap.zoom.increase": "Minimap zoom out",
   "pl3xmap.key.minimap.zoom.decrease": "Minimap zoom in",
+
+  "pl3xmap.screen.full-map.options": "Settings",
+  "pl3xmap.screen.full-map.options.tooltip": "Configure the Pl3xMap options",
 
   "pl3xmap.screen.position.size": "Size: %s Zoom: %s",
   "pl3xmap.screen.position.center": "Position: %s, %s",
@@ -14,11 +18,6 @@
   "pl3xmap.screen.position.help4": "Press ESC when done",
 
   "pl3xmap.screen.options.title": "Pl3xMap",
-
-  "pl3xmap.screen.options.on": "§aOn",
-  "pl3xmap.screen.options.off": "§cOff",
-  "pl3xmap.screen.options.yes": "§aYes",
-  "pl3xmap.screen.options.no": "§cNo",
 
   "pl3xmap.screen.options.renderer.title": "Map Item Renderer",
   "pl3xmap.screen.options.renderer.enabled": "Map Renderer",

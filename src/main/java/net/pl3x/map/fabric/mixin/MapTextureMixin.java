@@ -84,7 +84,7 @@ public abstract class MapTextureMixin implements MapTexture {
             for (int z = 0; z < 128; z++) {
                 int blockX = startX + (x * mod) + this.scale;
                 int blockZ = startZ + (z * mod) + this.scale;
-                Tile tile = this.pl3xmap.getTileManager().get(this.world, blockX >> 9, blockZ >> 9);
+                Tile tile = this.pl3xmap.getTileManager().get(this.world, blockX >> 9, blockZ >> 9, this.world.getZoomMax());
                 this.image.setPixel(x, z, tile == null ? 0 : tile.getImage().getPixel(blockX & 511, blockZ & 511));
             }
         }

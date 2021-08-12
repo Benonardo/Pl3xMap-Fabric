@@ -20,7 +20,7 @@
       "net.pl3x.map.fabric.Pl3xMap"
     ],
     "modmenu": [
-      "net.pl3x.map.fabric.gui.screen.ModMenuImpl"
+      "net.pl3x.map.fabric.gui.ModMenu"
     ]
   },
   "mixins": [

@@ -6,12 +6,16 @@ import java.util.UUID;
 public final class World {
     private final UUID uuid;
     private final String name;
-    private final int zoom;
+    private final int zoomMax;
+    private final int zoomDefault;
+    private final int zoomExtra;
 
-    public World(UUID uuid, String name, int zoom) {
+    public World(UUID uuid, String name, int zoomMax, int zoomDefault, int zoomExtra) {
         this.uuid = uuid;
         this.name = name;
-        this.zoom = zoom;
+        this.zoomMax = zoomMax;
+        this.zoomDefault = zoomDefault;
+        this.zoomExtra = zoomExtra;
     }
 
     public UUID getUUID() {
@@ -22,8 +26,16 @@ public final class World {
         return name;
     }
 
-    public int getZoom() {
-        return zoom;
+    public int getZoomMax() {
+        return zoomMax;
+    }
+
+    public int getZoomDefault() {
+        return this.zoomDefault;
+    }
+
+    public int getZoomExtra() {
+        return this.zoomExtra;
     }
 
     @Override
@@ -33,12 +45,14 @@ public final class World {
         var that = (World) obj;
         return Objects.equals(this.uuid, that.uuid) &&
                 Objects.equals(this.name, that.name) &&
-                this.zoom == that.zoom;
+                this.zoomMax == that.zoomMax &&
+                this.zoomDefault == that.zoomDefault &&
+                this.zoomExtra == that.zoomExtra;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, name, zoom);
+        return Objects.hash(uuid, name, zoomMax, zoomDefault, zoomExtra);
     }
 
     @Override
@@ -46,6 +60,8 @@ public final class World {
         return "World[" +
                 "uuid=" + uuid + ", " +
                 "name=" + name + ", " +
-                "zoom=" + zoom + ']';
+                "zoomMax=" + zoomMax +
+                "zoomDefault=" + zoomDefault +
+                "zoomExtra=" + zoomExtra + ']';
     }
 }

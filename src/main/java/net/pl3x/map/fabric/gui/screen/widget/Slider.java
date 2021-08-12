@@ -43,26 +43,26 @@ public class Slider extends ClickableWidget implements Tickable {
     }
 
     @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        super.renderButton(matrices, mouseX, mouseY, delta);
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+        super.renderButton(matrixStack, mouseX, mouseY, delta);
         if (this.isHovered() && this.tooltipDelay > 10) {
-            this.renderTooltip(matrices, mouseX, mouseY);
+            this.renderTooltip(matrixStack, mouseX, mouseY);
         }
     }
 
     @Override
-    protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
+    protected void renderBackground(MatrixStack matrixStack, MinecraftClient client, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int i = (this.isHovered() ? 2 : 1) * 20;
-        this.drawTexture(matrices, this.x + (int) (this.value * (double) (this.width - 8)), this.y, 0, 46 + i, 4, 20);
-        this.drawTexture(matrices, this.x + (int) (this.value * (double) (this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
+        this.drawTexture(matrixStack, this.x + (int) (this.value * (double) (this.width - 8)), this.y, 0, 46 + i, 4, 20);
+        this.drawTexture(matrixStack, this.x + (int) (this.value * (double) (this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
     }
 
     @Override
-    public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
+    public void renderTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
         List<OrderedText> tooltip = MinecraftClient.getInstance().textRenderer.wrapLines(this.option.tooltip(), 200);
-        this.screen.renderOrderedTooltip(matrices, tooltip, mouseX, mouseY);
+        this.screen.renderOrderedTooltip(matrixStack, tooltip, mouseX, mouseY);
     }
 
     @Override

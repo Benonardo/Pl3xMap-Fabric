@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class TileDownloader {
-    private final Executor executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() / 2);
+    public static final Executor executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() / 2);
     private final java.util.Map<Tile, CompletableFuture<Void>> queue = new HashMap<>();
     private final Pl3xMap pl3xmap;
 
@@ -22,7 +22,17 @@ public class TileDownloader {
             return; // already downloading
         }
         this.queue.put(tile, CompletableFuture.runAsync(new TileQueue(this.pl3xmap, tile), this.executor)
-                .whenComplete((result, throwable) -> this.queue.remove(tile))
+                .exceptionally(throwable -> {
+                    throwable.printStackTrace();
+                    this.queue.remove(tile);
+                    return null;
+                })
+                .whenComplete((result, throwable) -> {
+                    if (throwable != null) {
+                        throwable.printStackTrace();
+                    }
+                    this.queue.remove(tile);
+                })
         );
     }
 

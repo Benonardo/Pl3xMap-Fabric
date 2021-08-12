@@ -19,14 +19,19 @@ public class TileQueue implements Runnable {
     @Override
     public void run() {
         try {
+            if (this.pl3xmap.getServerManager().getUrl() == null) {
+                return;
+            }
             BufferedImage buffered = ImageIO.read(new URL(String.format("%s/tiles/%s/%s/%s_%s.png",
                     this.pl3xmap.getServerManager().getUrl(),
                     this.tile.getWorld().getName(),
-                    this.tile.getWorld().getZoom(),
+                    this.tile.getZoom(),
                     this.tile.getX(),
                     this.tile.getZ()
             )));
-            ImageIO.write(buffered, "png", this.tile.getFile());
+            if (buffered != null) {
+                ImageIO.write(buffered, "png", this.tile.getFile());
+            }
             this.tile.setImage(buffered);
             this.pl3xmap.updateAllMapTextures();
         } catch (IOException e) {

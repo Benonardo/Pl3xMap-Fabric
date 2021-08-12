@@ -27,14 +27,13 @@ public abstract class AbstractScreen extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
         renderBackground(matrixStack);
-        drawText(matrixStack, this.title, (int) (this.width / 2F), 15);
         super.render(matrixStack, mouseX, mouseY, delta);
     }
 
     @Override
-    public void renderBackground(MatrixStack matrices, int vOffset) {
+    public void renderBackground(MatrixStack matrixStack, int vOffset) {
         if (this.client != null && this.client.world != null) {
-            this.fillGradient(matrices, 0, 0, this.width, this.height, 0xD00F4863, 0xC0370038);
+            this.fillGradient(matrixStack, 0, 0, this.width, this.height, 0xD00F4863, 0xC0370038);
         } else {
             this.renderBackgroundTexture(vOffset);
         }
@@ -56,7 +55,7 @@ public abstract class AbstractScreen extends Screen {
         this.pl3xmap.getConfigManager().save();
         this.keyHandler.cancel();
         if (this.client != null) {
-            this.client.setScreen(parent);
+            this.client.setScreen(this.parent);
         }
     }
 

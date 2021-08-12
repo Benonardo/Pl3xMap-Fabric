@@ -9,13 +9,14 @@ import net.pl3x.map.fabric.gui.screen.widget.MiniMapWidget;
 import org.lwjgl.glfw.GLFW;
 
 public class PositionScreen extends AbstractScreen {
+    private static final String SIZE = I18n.translate("pl3xmap.screen.position.size", "%s", "%s");
+    private static final String CENTER = I18n.translate("pl3xmap.screen.position.center", "%s", "%s");
+    private static final String HELP_1 = I18n.translate("pl3xmap.screen.position.help1");
+    private static final String HELP_2 = I18n.translate("pl3xmap.screen.position.help2");
+    private static final String HELP_3 = I18n.translate("pl3xmap.screen.position.help3");
+    private static final String HELP_4 = I18n.translate("pl3xmap.screen.position.help4");
+
     private final MiniMap minimap;
-    private final String strSize;
-    private final String strCenter;
-    private final String strHelp1;
-    private final String strHelp2;
-    private final String strHelp3;
-    private final String strHelp4;
 
     public PositionScreen(Pl3xMap pl3xmap, Screen parent) {
         super(pl3xmap, parent);
@@ -29,17 +30,11 @@ public class PositionScreen extends AbstractScreen {
 
         // hide minimap so we're not drawing it twice
         this.minimap.setVisible(false);
-
-        this.strSize = I18n.translate("pl3xmap.screen.position.size", "%s", "%s");
-        this.strCenter = I18n.translate("pl3xmap.screen.position.center", "%s", "%s");
-        this.strHelp1 = I18n.translate("pl3xmap.screen.position.help1");
-        this.strHelp2 = I18n.translate("pl3xmap.screen.position.help2");
-        this.strHelp3 = I18n.translate("pl3xmap.screen.position.help3");
-        this.strHelp4 = I18n.translate("pl3xmap.screen.position.help4");
     }
 
     @Override
     protected void init() {
+        // minimap is a clickable widget for click and drag conveniences
         addDrawableChild(new MiniMapWidget(this.minimap));
     }
 
@@ -50,13 +45,15 @@ public class PositionScreen extends AbstractScreen {
         int centerX = (int) (this.width / 2F);
         int centerY = (int) (this.height / 2F);
 
-        drawText(matrixStack, String.format(this.strSize, this.minimap.getSize(), this.minimap.getZoom()), centerX, 30);
-        drawText(matrixStack, String.format(this.strCenter, this.minimap.getCenterX(), this.minimap.getCenterZ()), centerX, 40);
+        drawText(matrixStack, this.title, centerX, 15);
 
-        drawText(matrixStack, this.strHelp1, centerX, centerY - 30);
-        drawText(matrixStack, this.strHelp2, centerX, centerY - 10);
-        drawText(matrixStack, this.strHelp3, centerX, centerY + 10);
-        drawText(matrixStack, this.strHelp4, centerX, centerY + 30);
+        drawText(matrixStack, String.format(SIZE, this.minimap.getSize(), this.minimap.getZoom()), centerX, 30);
+        drawText(matrixStack, String.format(CENTER, this.minimap.getCenterX(), this.minimap.getCenterZ()), centerX, 40);
+
+        drawText(matrixStack, HELP_1, centerX, centerY - 30);
+        drawText(matrixStack, HELP_2, centerX, centerY - 10);
+        drawText(matrixStack, HELP_3, centerX, centerY + 10);
+        drawText(matrixStack, HELP_4, centerX, centerY + 30);
     }
 
     @Override

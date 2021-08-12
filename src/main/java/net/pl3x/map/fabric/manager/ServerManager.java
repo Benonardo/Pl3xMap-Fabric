@@ -72,8 +72,10 @@ public class ServerManager {
         for (int i = 0; i < count; i++) {
             UUID uuid = UUID.fromString(packet.readUTF());
             String name = packet.readUTF();
-            int zoom = packet.readInt();
-            this.worlds.put(uuid, new World(uuid, name, zoom));
+            int zoomMax = packet.readInt();
+            int zoomDefault = packet.readInt();
+            int zoomExtra = packet.readInt();
+            this.worlds.put(uuid, new World(uuid, name, zoomMax, zoomDefault, zoomExtra));
         }
         UUID uuid = UUID.fromString(packet.readUTF());
         this.pl3xmap.setWorld(this.worlds.get(uuid));

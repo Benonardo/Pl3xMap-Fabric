@@ -42,10 +42,10 @@ public class Button extends PressableWidget implements Tickable {
     }
 
     @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        super.renderButton(matrices, mouseX, mouseY, delta);
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float delta) {
+        super.renderButton(matrixStack, mouseX, mouseY, delta);
         if (this.isHovered() && this.tooltipDelay > 10) {
-            this.renderTooltip(matrices, mouseX, mouseY);
+            this.renderTooltip(matrixStack, mouseX, mouseY);
         }
     }
 
@@ -59,9 +59,9 @@ public class Button extends PressableWidget implements Tickable {
     }
 
     @Override
-    public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
+    public void renderTooltip(MatrixStack matrixStack, int mouseX, int mouseY) {
         List<OrderedText> tooltip = MinecraftClient.getInstance().textRenderer.wrapLines(this.tooltip, 150);
-        this.screen.renderOrderedTooltip(matrices, tooltip, mouseX, mouseY);
+        this.screen.renderOrderedTooltip(matrixStack, tooltip, mouseX, mouseY);
     }
 
     @Override

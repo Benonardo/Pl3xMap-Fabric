@@ -3,12 +3,13 @@ package net.pl3x.map.fabric;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.pl3x.map.fabric.configuration.Config;
-import net.pl3x.map.fabric.gui.MiniMap;
-import net.pl3x.map.fabric.manager.ConfigManager;
-import net.pl3x.map.fabric.manager.ServerManager;
 import net.pl3x.map.fabric.duck.MapTexture;
+import net.pl3x.map.fabric.gui.MiniMap;
 import net.pl3x.map.fabric.keyboard.Keyboard;
+import net.pl3x.map.fabric.manager.ConfigManager;
 import net.pl3x.map.fabric.manager.NetworkManager;
+import net.pl3x.map.fabric.manager.ServerManager;
+import net.pl3x.map.fabric.manager.TextureManager;
 import net.pl3x.map.fabric.manager.TileManager;
 import net.pl3x.map.fabric.scheduler.Scheduler;
 import net.pl3x.map.fabric.util.World;
@@ -25,6 +26,7 @@ public class Pl3xMap implements ModInitializer {
     private final NetworkManager networkManager;
     private final ServerManager serverManager;
     private final TileManager tileManager;
+    private final TextureManager textureManager;
 
     private final Scheduler scheduler;
     private final Keyboard keyboard;
@@ -42,6 +44,7 @@ public class Pl3xMap implements ModInitializer {
         this.networkManager = new NetworkManager(this);
         this.serverManager = new ServerManager(this);
         this.tileManager = new TileManager(this);
+        this.textureManager = new TextureManager();
 
         this.scheduler = new Scheduler();
         this.keyboard = new Keyboard(this);
@@ -67,6 +70,9 @@ public class Pl3xMap implements ModInitializer {
         this.keyboard.initialize();
 
         this.minimap.initialize();
+
+        // we need a context to initialize textures on
+        this.scheduler.addTask(0, this.textureManager::initialize);
     }
 
     public void enable() {
@@ -127,6 +133,10 @@ public class Pl3xMap implements ModInitializer {
 
     public TileManager getTileManager() {
         return this.tileManager;
+    }
+
+    public TextureManager getTextureManager() {
+        return this.textureManager;
     }
 
     public Scheduler getScheduler() {

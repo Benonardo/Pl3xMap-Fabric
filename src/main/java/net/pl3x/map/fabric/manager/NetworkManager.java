@@ -40,10 +40,14 @@ public class NetworkManager {
                     int response = packet.readInt();
                     if (response != Constants.RESPONSE_SUCCESS) {
                         this.pl3xmap.disable();
+                        return;
                     }
                     UUID uuid = UUID.fromString(packet.readUTF());
                     World world = this.pl3xmap.getServerManager().getWorld(uuid);
                     this.pl3xmap.setWorld(world);
+                    if (world != null) {
+                        this.pl3xmap.getMiniMap().enable();
+                    }
                 }
                 case Constants.MAP_DATA -> {
                     int response = packet.readInt();
