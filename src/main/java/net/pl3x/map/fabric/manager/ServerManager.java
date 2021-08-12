@@ -77,6 +77,8 @@ public class ServerManager {
         }
         UUID uuid = UUID.fromString(packet.readUTF());
         this.pl3xmap.setWorld(this.worlds.get(uuid));
-        this.pl3xmap.getMiniMap().enable();
+        if (this.pl3xmap.getConfig().getMinimap().getEnabled()) {
+            this.pl3xmap.getMiniMap().enable();
+        }
     }
 }
