@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class FullMapWidget implements Drawable, Element, Selectable {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     private final Set<Tile> tiles = new LinkedHashSet<>();
 
