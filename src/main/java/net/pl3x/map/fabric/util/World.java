@@ -60,8 +60,8 @@ public final class World {
         return "World[" +
                 "uuid=" + uuid + ", " +
                 "name=" + name + ", " +
-                "zoomMax=" + zoomMax +
-                "zoomDefault=" + zoomDefault +
+                "zoomMax=" + zoomMax + ", " +
+                "zoomDefault=" + zoomDefault + ", " +
                 "zoomExtra=" + zoomExtra + ']';
     }
 }
