@@ -7,7 +7,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.pl3x.map.fabric.Pl3xMap;
 import net.pl3x.map.fabric.gui.screen.FullMapScreen;
-import net.pl3x.map.fabric.gui.screen.OptionsScreen;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -23,8 +22,7 @@ public class Keyboard {
 
     public void initialize() {
         this.globalKeys.addAll(List.of(
-                new Key("pl3xmap.key.options.open", "pl3xmap.key.category", GLFW.GLFW_KEY_M, () -> MinecraftClient.getInstance().setScreen(new OptionsScreen(this.pl3xmap, null))),
-                new Key("pl3xmap.key.full-map.open", "pl3xmap.key.category", GLFW.GLFW_KEY_N, () -> MinecraftClient.getInstance().setScreen(new FullMapScreen(this.pl3xmap, null))),
+                new Key("pl3xmap.key.options.open", "pl3xmap.key.category", GLFW.GLFW_KEY_M, () -> MinecraftClient.getInstance().setScreen(new FullMapScreen(this.pl3xmap, null))),
 
                 new Key("pl3xmap.key.minimap.zoom.increase", "pl3xmap.key.category", GLFW.GLFW_KEY_PAGE_UP, () -> this.pl3xmap.getMiniMap().addZoomLevel(1)),
                 new Key("pl3xmap.key.minimap.zoom.decrease", "pl3xmap.key.category", GLFW.GLFW_KEY_PAGE_DOWN, () -> this.pl3xmap.getMiniMap().addZoomLevel(-1))
