@@ -12,6 +12,7 @@ import net.pl3x.map.fabric.util.World;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Locale;
 
 public class Tile {
     public static final int SIZE = 512;
@@ -36,7 +37,7 @@ public class Tile {
         this.image = new Image(SIZE);
         updateLastUsed();
 
-        this.identifier = new Identifier(Constants.MODID, world.getName() + "." + zoom + "." + x + "." + z);
+        this.identifier = new Identifier(Constants.MODID, world.getName().toLowerCase(Locale.ROOT) + "." + zoom + "." + x + "." + z);
 
         initTexture();
     }
@@ -131,7 +132,7 @@ public class Tile {
     }
 
     public File getFile() {
-        File dir = new File(new File(new File(Constants.MODID, ip().replace(":", "-")), this.world.getName()), String.valueOf(this.zoom));
+        File dir = new File(new File(new File(Constants.MODID, ip().replace(":", "-").toLowerCase(Locale.ROOT)), this.world.getName().toLowerCase(Locale.ROOT)), String.valueOf(this.zoom));
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
                 throw new IllegalStateException("Cannot create tiles directory for " + this.world + " Directory: " + dir.getAbsolutePath());
