@@ -132,7 +132,7 @@ public class Tile {
     }
 
     public File getFile() {
-        File dir = new File(new File(new File(Constants.MODID, ip().replace(":", "-").toLowerCase(Locale.ROOT)), this.world.getName().toLowerCase(Locale.ROOT)), String.valueOf(this.zoom));
+        File dir = new File(new File(new File(Constants.MODID, ip().replace(":", "-").toLowerCase(Locale.ROOT)), this.world.getName()), String.valueOf(this.zoom));
         if (!dir.exists()) {
             if (!dir.mkdirs()) {
                 throw new IllegalStateException("Cannot create tiles directory for " + this.world + " Directory: " + dir.getAbsolutePath());
