@@ -45,7 +45,7 @@ public class NetworkManager {
                     UUID uuid = UUID.fromString(packet.readUTF());
                     World world = this.pl3xmap.getServerManager().getWorld(uuid);
                     this.pl3xmap.setWorld(world);
-                    if (world != null) {
+                    if (world != null && this.pl3xmap.getConfig().getMinimap().getEnabled()) {
                         this.pl3xmap.getMiniMap().enable();
                     }
                 }
