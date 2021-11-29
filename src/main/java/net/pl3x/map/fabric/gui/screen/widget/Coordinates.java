@@ -13,6 +13,7 @@ import net.minecraft.client.toast.Toast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.pl3x.map.fabric.mixin.ToastAccessor;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -44,7 +45,7 @@ public class Coordinates extends DrawableHelper implements Drawable, Element, Se
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         TextRenderer textRenderer = minecraftClient.textRenderer;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, Toast.TEXTURE);
+        RenderSystem.setShaderTexture(0, ToastAccessor.accessTEXTURE());
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

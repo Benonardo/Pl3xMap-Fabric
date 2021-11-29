@@ -68,7 +68,7 @@ public class TextureManager {
     public void drawTexture(MatrixStack matrixStack, Identifier texture, float x0, float y0, float x1, float y1, float u0, float v0, float u1, float v1) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, texture);
-        Matrix4f model = matrixStack.peek().getModel();
+        Matrix4f model = matrixStack.peek().getPositionMatrix();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(model, x0, y1, 0F).texture(u0, v1).next();

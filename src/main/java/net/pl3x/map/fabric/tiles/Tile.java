@@ -105,7 +105,7 @@ public class Tile {
             }
             for (int x = 0; x < SIZE; x++) {
                 for (int z = 0; z < SIZE; z++) {
-                    this.texture.getImage().setPixelColor(x, z, this.image.getPixel(x, z));
+                    this.texture.getImage().setColor(x, z, this.image.getPixel(x, z));
                 }
             }
             this.texture.upload();

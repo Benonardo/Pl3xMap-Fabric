@@ -1,6 +1,5 @@
 package net.pl3x.map.fabric.mixin;
 
-import net.minecraft.block.MapColor;
 import net.minecraft.client.render.MapRenderer;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.item.map.MapState;
@@ -109,7 +108,7 @@ public abstract class MapTextureMixin implements MapTexture {
                     } else {
                         pl3xColor = this.image.getPixel(x, z);
                         if (pl3xColor == 0) {
-                            setPixelColor(x, z, MapColor.COLORS[color / 4].getRenderColor(color & 3));
+                            setPixelColor(x, z, MapColorAccessor.getColors()[color / 4].getRenderColor(color & 3));
                         } else {
                             setPixelColor(x, z, pl3xColor);
                         }
@@ -122,6 +121,6 @@ public abstract class MapTextureMixin implements MapTexture {
 
     @SuppressWarnings("ConstantConditions")
     private void setPixelColor(int x, int z, int color) {
-        this.texture.getImage().setPixelColor(x, z, color);
+        this.texture.getImage().setColor(x, z, color);
     }
 }

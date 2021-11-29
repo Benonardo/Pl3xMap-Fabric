@@ -11,6 +11,7 @@ import net.minecraft.util.Identifier;
 import net.pl3x.map.fabric.Pl3xMap;
 import net.pl3x.map.fabric.configuration.Lang;
 import net.pl3x.map.fabric.duck.MapTexture;
+import net.pl3x.map.fabric.mixin.MapRendererAccessor;
 import net.pl3x.map.fabric.util.Constants;
 import net.pl3x.map.fabric.util.World;
 
@@ -54,7 +55,7 @@ public class NetworkManager {
                     switch (response) {
                         case Constants.ERROR_NO_SUCH_MAP, Constants.ERROR_NO_SUCH_WORLD, Constants.ERROR_NOT_VANILLA_MAP -> {
                             int id = packet.readInt();
-                            MapTexture texture = (MapTexture) MinecraftClient.getInstance().gameRenderer.getMapRenderer().mapTextures.get(id);
+                            MapTexture texture = (MapTexture) ((MapRendererAccessor)MinecraftClient.getInstance().gameRenderer.getMapRenderer()).accessMapTextures().get(id);
                             if (texture != null) {
                                 texture.skip();
                             }
@@ -66,7 +67,7 @@ public class NetworkManager {
                             int z = packet.readInt();
                             UUID uuid = UUID.fromString(packet.readUTF());
                             World world = this.pl3xmap.getServerManager().getWorld(uuid);
-                            MapTexture texture = (MapTexture) MinecraftClient.getInstance().gameRenderer.getMapRenderer().mapTextures.get(id);
+                            MapTexture texture = (MapTexture) ((MapRendererAccessor)MinecraftClient.getInstance().gameRenderer.getMapRenderer()).accessMapTextures().get(id);
                             if (world != null && texture != null) {
                                 texture.setData(scale, x, z, world);
                             }
